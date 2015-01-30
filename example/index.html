@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Example </title>
+	<script type="text/javascript" src="../vendor/vendor.min.js"></script>
+	<script type="text/javascript" src="../lib/ea-daily-timeline-horizontal.js"></script>
+	<style type="text/css">
+	.app{
+		width: 600px;
+	}
+	.timeline{
+	}
+	.timeline-interval-region{
+		height: 25px;
+		position: relative;
+	}	
+	.time-interval{
+		position: absolute;
+		display: inline-block;
+		width: 40px;
+		text-align: center;
+	}
+	.time-interval div{
+		position: absolute;
+		left: -20px;
+	}
+
+	.timeline-slot-region .slot{
+		height: 30px;
+		display: inline-block;
+		
+	}
+
+	.time-description .slot{
+		height: 40px;
+		border-style: solid none;
+		border-width: 1px;
+		margin-bottom: -1px;
+	}
+	.time-description .slot .slot-time{
+		height: 40px;
+		width: 100px;
+	}
+	</style>
+</head>
+<body>
+<div class='app'>
+	<div class="timeline"></div>
+	<div class="time-description">TimeSlot Description</div> 
+</div>
+<script type="text/javascript">
+arr = [1422523800,1422526800,1422531000,1422534600,
+				1422538200,1422541800,1422546400,1422552600]
+	timeline = new Timeline($('.app'),arr)
+</script>
+
+</body>
+</html>
