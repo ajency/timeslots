@@ -30,13 +30,25 @@ module.exports = (grunt) ->
 
 		concat: 
 			options:
-				# separator: ';'
+				separator: ';'
 				stripBanners:  true
 				banner: '<%= banner %>'
 		
 			vendor: 
 				src: [	'bower_components/jquery/dist/jquery.js'
-						'bower_components/moment/moment.js']
+						'bower_components/moment/moment.js'
+						'bower_components/jquery-ui/ui/core.js'
+						'bower_components/jquery-ui/ui/widget.js'
+						'bower_components/jquery-ui/ui/mouse.js'
+						'bower_components/jquery-ui/ui/draggable.js'
+						'bower_components/jqueryui-touch-punch/jquery.ui.touch-punch.min.js'
+						# 'bower_components/jquery-ui/ui/effect.js'
+						# 'vendor/Smooth-Div-Scroll-master/js/jquery-ui-1.10.3.custom.min.js'
+						# 'vendor/Smooth-Div-Scroll-master/js/jquery.kinetic.min.js'
+						# 'vendor/Smooth-Div-Scroll-master/js/jquery.mousewheel.min.js'
+						
+						# 'vendor/Smooth-Div-Scroll-master/js/jquery.smoothdivscroll-1.3-min.js'
+					]
 				dest: 'vendor/vendor.js'
 
 
