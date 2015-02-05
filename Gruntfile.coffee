@@ -112,6 +112,10 @@ module.exports = (grunt) ->
 						dest:'server/timelinecloud/public'
 					,
 						expand:true
+						src:['vendor/bootstrap/fonts/**']
+						dest:'server/timelinecloud/public'
+					,
+						expand:true
 						src:['example/**']
 						dest:'server/timelinecloud/public'
 					,

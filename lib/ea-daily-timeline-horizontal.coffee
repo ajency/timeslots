@@ -85,15 +85,29 @@
 			diff += "#{moment.duration(duration).minutes()} min"
 		$parent.find('.time-description').append "<div data-slot='#{slotId}' class='slot'><div class='slot-time' style='background-color:#{color}'>#{diff}</div></div>"
 
-	getRandomColor = ->
-		letters = '789ABCDEF'.split('');
-		color = '#';
-		for i in [1..3]
-			color += letters[Math.floor(Math.random() * 9)];
-			color += 'A'
+	index = [1,1,1,1,1,1]
 
-		if color in usedColors
+	getRandomColor = ->
+
+		
+
+		letters = '6789ABCDEF'.split('');
+		color = '#';
+		for i in [0..5]
+			if i%2
+				index[i] = (index[i]+Math.floor(Math.random()*10))%10
+			else 
+				val = (index[i]-Math.floor(Math.random()*10))%10
+				index[i] = if val < 0 then 10 + val else val
+			color += letters[index[i]];
+			# color += 'A'
+
+		if color not in usedColors
+			usedColors.push color
+
+		else
 			color = getRandomColor()
+
 		
 		color;
 
@@ -331,11 +345,15 @@
 		
 		stopCombineSlot $parent
 
+		if options.onCombineSlot? and typeof options.onCombineSlot is 'function'
+				options.onCombineSlot.call @, options.timeArray
+
 		$parent.trigger 'refresh'
 
 	stopCombineSlot = ($parent)->
 		$('.time-description.combine-parent .slot.combine-current .cancel-combine').off().remove()
-		$('.time-description.combine-parent .slot.combine-neighbour').off('tap',combineSlots).removeClass 'combine-neighbour'
+		$('.time-description.combine-parent .slot.combine-neighbour').off('tap').removeClass 'combine-neighbour'
+		$('.time-description.combine-parent .slot.combine-current').removeClass 'combine-current'
 		$('.time-description.combine-parent ').removeClass 'combine-parent'
 
 		
