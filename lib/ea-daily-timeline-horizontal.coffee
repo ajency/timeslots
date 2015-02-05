@@ -223,11 +223,14 @@
 
 	addSwipeEventHandlers = ($parent, options)->
 
-		startX = startY = distX = distY = 0
+		# startX = startY = distX = distY = 0
+
 
 		$timeslotDescription = $parent.find('.time-description .slot')
 
 		$timeslotDescription.on 'swiperight',(e)->
+
+			if $(e.target).closest('.time-description').hasClass 'combine-parent' then return
 
 			# newMoment = moment.unix(options.timeArray[0])
 			if not $(e.target).hasClass 'slot'
@@ -291,8 +294,9 @@
 
 
 		$timeslotDescription.on 'swipeleft',(e)->
-			if not $(e.target).hasClass 'slot'
-				return
+			if $(e.target).closest('.time-description').hasClass 'combine-parent' then return
+			if not $(e.target).hasClass 'slot' then return
+
 			slotNo = parseInt $(e.target).attr 'data-slot'
 
 			isFirst = if slotNo is 0 then true else false
@@ -300,37 +304,34 @@
 
 			if isFirst and isLast then return
 
-			template = ''
+
+			$(e.target).closest('.time-description').addClass 'combine-parent'
+
+			$(e.target).addClass 'combine-current'
 			if not isFirst
-				template += '<input type="radio" name="combine" value="top" checked>Top  </br>'
-			if not isLast
-				template += '<input type="radio" name="combine" value="bottom" checked>Bottom '
+				$('.time-description.combine-parent .slot[data-slot="'+(slotNo-1)+'"]').addClass 'combine-neighbour'
 
-			bootbox.dialog
-				title : 'Combine Slots'
-				message : template
-				buttons :
-					cancel : 
-						label : 'Cancel'
-						className : 'btn-failure'
-					combine:
-						label : 'Combine'
-						className : 'btn-primary'
-						callback : ->
-							combineWith = $('input[name="combine"]:checked').val()
-							if combineWith is 'top'
-								options.timeArray.splice slotNo,1
-							else if combineWith is 'bottom'
-								options.timeArray.splice slotNo+1, 1
-							else
-								return
-							if options.onCombineSlot? and typeof options.onCombineSlot is 'function'
-									options.onCombineSlot.call @, options.timeArray
-								$parent.trigger 'refresh'
+			if not isLast 
+				$('.time-description.combine-parent .slot[data-slot="'+(slotNo+1)+'"]').addClass 'combine-neighbour'
+
+			$('.time-description.combine-parent .slot.combine-neighbour').on 'tap',combineSlots.bind @, $parent, options,slotNo
+
+			
 
 
+	combineSlots = ($parent, options, slotNo, e)->
+		console.log 'combine'
+		neighbourSlot = parseInt $(e.target).attr 'data-slot'
+		if neighbourSlot < slotNo
+			options.timeArray.splice slotNo,1
+		else if neighbourSlot > slotNo
+			options.timeArray.splice slotNo+1, 1
 
-								
+		$('.time-description.combine-parent .slot.combine-neighbour').off('tap',combineSlots).removeClass 'combine-neighbour'
+		$('.time-description.combine-parent ').removeClass 'combine-parent'
+
+		$parent.trigger 'refresh'
+
 
 
 	render = (options)->
