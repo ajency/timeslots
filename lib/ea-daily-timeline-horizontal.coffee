@@ -308,6 +308,8 @@
 			$(e.target).closest('.time-description').addClass 'combine-parent'
 
 			$(e.target).addClass 'combine-current'
+			$(e.target).append '<span class="cancel-combine"><i class="glyphicon glyphicon-remove"></i></span>'
+
 			if not isFirst
 				$('.time-description.combine-parent .slot[data-slot="'+(slotNo-1)+'"]').addClass 'combine-neighbour'
 
@@ -315,7 +317,7 @@
 				$('.time-description.combine-parent .slot[data-slot="'+(slotNo+1)+'"]').addClass 'combine-neighbour'
 
 			$('.time-description.combine-parent .slot.combine-neighbour').on 'tap',combineSlots.bind @, $parent, options,slotNo
-
+			$('.time-description.combine-parent .slot.combine-current .cancel-combine').on 'tap',stopCombineSlot.bind @,$parent
 			
 
 
@@ -326,11 +328,19 @@
 			options.timeArray.splice slotNo,1
 		else if neighbourSlot > slotNo
 			options.timeArray.splice slotNo+1, 1
+		
+		stopCombineSlot $parent
 
+		$parent.trigger 'refresh'
+
+	stopCombineSlot = ($parent)->
+		$('.time-description.combine-parent .slot.combine-current .cancel-combine').off().remove()
 		$('.time-description.combine-parent .slot.combine-neighbour').off('tap',combineSlots).removeClass 'combine-neighbour'
 		$('.time-description.combine-parent ').removeClass 'combine-parent'
 
-		$parent.trigger 'refresh'
+		
+
+		
 
 
 

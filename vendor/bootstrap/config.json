@@ -377,10 +377,11 @@
   },
   "css": [
     "buttons.less",
+    "glyphicons.less",
     "modals.less"
   ],
   "js": [
     "modal.js"
   ],
-  "customizerUrl": "http://getbootstrap.com/customize/?id=9b9a24bb2e7066fef15c"
+  "customizerUrl": "http://getbootstrap.com/customize/?id=4a2acd0f040837fb081b"
 }
