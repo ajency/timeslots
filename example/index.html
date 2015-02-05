@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta name="viewport" content="width=device-width">
 	<title>Example </title>
 	<script type="text/javascript" src="../vendor/vendor.js"></script>
 	<script type="text/javascript" src="../lib/ea-daily-timeline-horizontal.js"></script>
+	<link rel="stylesheet" type="text/css" href="../vendor/bootstrap/css/bootstrap.min.css">
 	<!-- <script type="text/javascript" src="../vendor/Smooth-Div-Scroll-master/js/jquery.smoothdivscroll-1.3-min.js"></script> -->
 	<style type="text/css">
 	.app{
-		width: 1000px;
+		/*width: 600px;*/
 	}
 	.timeline{
 		/*width: 100%;
@@ -60,14 +62,21 @@
 	}
 
 	.time-description .slot{
-		height: 40px;
+		height: 60px;
 		border-style: solid none;
 		border-width: 1px;
 		margin-bottom: -1px;
 	}
 	.time-description .slot .slot-time{
-		height: 40px;
+		height: 60px;
 		width: 100px;
+	}
+
+
+	input[type=number]::-webkit-inner-spin-button, 
+	input[type=number]::-webkit-outer-spin-button { 
+	  -webkit-appearance: none; 
+	  margin: 0; 
 	}
 	</style>
 </head>
@@ -77,9 +86,12 @@
 	<div class="time-description">TimeSlot Description</div> 
 </div>
 <script type="text/javascript">
-arr = [1422523800,1422526800,1422527800,1422534600,
+arr = [1422523800,1422526800,1422528000,1422534600,
 				1422538200,1422541800,1422546400,1422552600]
-	timeline = new Timeline($('.app'),arr)
+	$('.app').timeline({
+		timeArray : arr,
+		showStartEndTimes : true
+	})
 </script>
 
 </body>

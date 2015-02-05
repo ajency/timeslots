@@ -8,6 +8,7 @@ module.exports = (grunt) ->
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks 'grunt-contrib-coffee'
+	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks 'grunt-contrib-watch'
 	grunt.loadNpmTasks 'grunt-exec'
 
@@ -42,6 +43,10 @@ module.exports = (grunt) ->
 						'bower_components/jquery-ui/ui/mouse.js'
 						'bower_components/jquery-ui/ui/draggable.js'
 						'bower_components/jqueryui-touch-punch/jquery.ui.touch-punch.min.js'
+						'vendor/jquery.mobile-1.4.5/jquery.mobile-1.4.5.js'
+						# 'vendor/jQuery-Touch-Events-master/src/jquery.mobile-events.js'
+						'bower_components/bootbox/bootbox.js'
+						'vendor/bootstrap/js/bootstrap.min.js'
 						# 'bower_components/jquery-ui/ui/effect.js'
 						# 'vendor/Smooth-Div-Scroll-master/js/jquery-ui-1.10.3.custom.min.js'
 						# 'vendor/Smooth-Div-Scroll-master/js/jquery.kinetic.min.js'
@@ -76,9 +81,9 @@ module.exports = (grunt) ->
 			tests :
 				files : [
 					expand: true
-					cwd: "tests/js"
+					cwd: "tests/specs"
 					src: ["*.coffee"]
-					dest: "tests/js"
+					dest: "tests/specs"
 					ext: ".js"
 				]
 
@@ -91,10 +96,29 @@ module.exports = (grunt) ->
 			coffee:
 				files: [
 					"lib/*.coffee"
-					"tests/js/*.coffee"
+					"tests/specs/*.coffee"
 				]
 				tasks: ["coffee:plugin","coffee:tests"]
 
+		copy : 
+			main : 
+				files : [
+						expand: true
+						src: ['vendor/*.js']
+						dest: 'server/timelinecloud/public'
+					,
+						expand:true
+						src:['vendor/bootstrap/css/bootstrap.min.css']
+						dest:'server/timelinecloud/public'
+					,
+						expand:true
+						src:['example/**']
+						dest:'server/timelinecloud/public'
+					,
+						expand:true
+						src:['lib/*.js']
+						dest:'server/timelinecloud/public'
+					]
 
 		# exec : 
 		# 	watchLib : 
@@ -123,5 +147,5 @@ module.exports = (grunt) ->
 			"coffee:plugin"
 			"coffee:tests"
 			"watch:coffee"
-			
+			"copy:main"
 		]

@@ -3,88 +3,37 @@
 	root = @
 	usedColors = []
 
-	doesClassExists = ($parent,className)->
-		$parent.find(".#{className}").length > 0
+	# hasChild = ($parent,className)->
+	# 	$parent.find(".#{className}").length > 0
 
-	createDivWithClass = ($parent,className)->
-		$parent.append "<div class='#{className}'></div>"
+	
 
-	checkIfDatesBelongToSameDay = (timeArray)->
-		for time in timeArray
-			if date and date isnt moment.unix(time).format('L')
-				return false
-			else
-				date = moment.unix(time).format('L')
-		true
+	
 
-	getStartTime  = (timeArray)->
-		timeArray[0] 
+	
 
-	getEndTime = (timeArray)->
-		timeArray[timeArray.length-1]
+	
 
-	getHourArray = (startTime,endTime)->
-		intervalArray = []
-		startHour = moment.unix(startTime).hour()
-		endHour = moment.unix(endTime).hour()
-		totalSeconds = endTime - startTime
-		intervalHour = startHour + 1
-		intervalMoment = moment.unix(startTime)
-		while intervalHour <= endHour
-			intervalMoment.hour(intervalHour)
-			intervalTime = intervalMoment.unix()
-			intervalSeconds = intervalTime - startTime
-			intervalPercent = intervalSeconds * 100 / totalSeconds
-			intervalLabel = intervalMoment.format('ha');
-			if intervalPercent > 5 and intervalPercent < 95
-				intervalArray.push 
-					label : intervalLabel
-					percentage : intervalPercent
-			intervalHour += 1 
-		intervalArray
-
-	insertTimelineInterval = ($parent, intervalArray)->
-		$parent.find('.timeline').append '<div class="overflow-timeline">
-					<div class="timeline-interval-region" style="height: 25px; position: relative;"></div>
-				</div>'
-		width = $parent.find('.timeline-interval-region').width()
-		allowedInterval = (width / 50) - 1
-		actualIntervalLength = intervalArray.length
-		while actualIntervalLength > allowedInterval
-			actualIntervalLength = Math.ceil actualIntervalLength/2
-
-		for interval,i in intervalArray
-			
-			if (i+1)%(Math.ceil(intervalArray.length/actualIntervalLength)) 
-				console.log (i+1)%(Math.ceil(intervalArray.length/actualIntervalLength))
-				continue
-			left = (interval.percentage * width / 100)-20
-			$parent.find('.timeline-interval-region').append "<div class='time-interval' style='left : #{interval.percentage}%'><div>#{interval.label}</div></div>"
-
-	getPixelPerSecond = (timeArray,width)->
-		shortestSlot = 100000
-		for time,i in timeArray
-			if i is 0 then continue
-			if shortestSlot > time - timeArray[i-1]
-				shortestSlot = time - timeArray[i-1]
-		pps = 40/shortestSlot
-
-		ppsTotal = width/(timeArray[timeArray.length-1]-timeArray[0])
-
-		pixelPerSecond = if pps > ppsTotal then pps else ppsTotal
-
-		pixelPerSecond
+	
+	
 
 
-	addTimeSlots = ($parent, timeArray)->
-		$parent.find('.overflow-timeline').append '<div class="timeline-slot-region"></div>'
+	addTimeSlots = ($parent, options)->
+
+		timeArray = options.timeArray
 
 		width = $parent.find('.timeline-interval-region').width()
 
 		pixelPerSecond = getPixelPerSecond timeArray,width
+
 		for time,i in timeArray
 			if i is 0
-				$parent.find('.timeline-slot-region').append "<div  class='slot-interval' ><div class='slot-interval-time first'>#{moment.unix(time).format('H:mm')}</div></div>"
+				if options.showStartEndTimes
+					$parent.find('.timeline-slot-region').append "<div  class='slot-interval' >
+												<div class='slot-interval-time first'>
+													#{moment.unix(time).format('H:mm')}
+												</div>
+												</div>"
 				continue
 
 			slotTime = time - timeArray[i-1]
@@ -93,10 +42,12 @@
 			color = getRandomColor()
 			$parent.find('.timeline-slot-region').append "<div data-slot='#{i-1}' class='slot' style='background-color: #{color}; width: #{percentage}px'></div>"
 			addDescription $parent,timeArray[i-1],time,color,i-1
-			if i < timeArray.length-1
-				$parent.find('.timeline-slot-region').append "<div  class='slot-interval' ><div class='slot-interval-time'>#{moment.unix(time).format('H:mm')}</div></div>"
-			else
-				$parent.find('.timeline-slot-region').append "<div  class='slot-interval' ><div class='slot-interval-time last'>#{moment.unix(time).format('H:mm')}</div></div>"
+			
+			if options.showStartEndTimes
+				if i < timeArray.length-1
+					$parent.find('.timeline-slot-region').append "<div  class='slot-interval' ><div class='slot-interval-time'>#{moment.unix(time).format('H:mm')}</div></div>"
+				else
+					$parent.find('.timeline-slot-region').append "<div  class='slot-interval' ><div class='slot-interval-time last'>#{moment.unix(time).format('H:mm')}</div></div>"
 
 			
 
@@ -110,14 +61,14 @@
 					outerWidth = $( ".overflow-timeline" ).parent().width()
 					positionLeft =  ui.position.left
 					if positionLeft < outerWidth - innerWidth 
-						console.log positionLeft
+						# console.log positionLeft
 						ui.position.left = outerWidth - innerWidth
 						# $( ".overflow-timeline" ).css 'left', (outerWidth - innerWidth) + 'px'
 					if positionLeft > 0
-						console.log positionLeft
+						# console.log positionLeft
 						ui.position.left = 0
 
-						$( ".overflow-timeline" ).css 'left', '0px'
+						# $( ".overflow-timeline" ).css 'left', '0px'
 
 		$( ".overflow-timeline" ).css 'display','inline-table'
 					
@@ -146,42 +97,283 @@
 		
 		color;
 
+# public funcions
+
+	validateSameDayTime = (timeArray)->
+		for time in timeArray
+			if date and date isnt moment.unix(time).format('L')
+				return false
+			else
+				date = moment.unix(time).format('L')
+		true
+
+	validateTimeArray = (timeArray)->
+
+		# checks that argument passed is an array
+		if not Array.isArray(timeArray)
+			return false
+
+		if timeArray.length < 2
+			return false
+
+		currentTime = getCurrentTimestamp()
+		for time in timeArray
+			if time < 1262304000 or time > currentTime
+				return false
+
+
+		if not validateSameDayTime timeArray
+			return false 
+
+		return true
+
+	getCurrentTimestamp = ->
+		timestamp = (new Date()).getTime() / 1000
+		Math.floor(timestamp)
+
+	createChildRegion = ($parent)->
+		$parent.html "	<div class='timeline'>
+							<div class='overflow-timeline'>
+								<div class='timeline-interval-region' style='height: 25px; position: relative;'></div>
+								<div class='timeline-slot-region'></div>
+							</div>
+						</div>
+						<div class='time-description'></div>"
+
+	getStartTime  = (timeArray)->
+		timeArray[0] 
+
+	getEndTime = (timeArray)->
+		timeArray[timeArray.length-1]
+
+	getHourArray = ( timeArray )->
+		startTime = getStartTime timeArray
+		endTime = getEndTime timeArray
+
+		intervalArray = []
+
+		startHour = moment.unix(startTime).hour()
+		endHour = moment.unix(endTime).hour()
+
+		totalSeconds = endTime - startTime
+
+		# interval hour shud be between star and end time 
+		tempHour = startHour + 1
+
+		tempMoment = moment.unix(startTime)
+
+		while tempHour <= endHour
+			tempMoment.hour(tempHour)
+			tempTime = tempMoment.unix()
+			intervalSeconds = tempTime - startTime
+			intervalPercent = intervalSeconds * 100 / totalSeconds
+			intervalLabel = tempMoment.format('ha');
+			if intervalPercent > 5 and intervalPercent < 95
+				intervalArray.push 
+					label : intervalLabel
+					percentage : intervalPercent
+			tempHour += 1
+
+		intervalArray
+
+	insertTimelineInterval = ($parent, intervalArray)->
+		width = $parent.find('.timeline-interval-region').width()
+		# allowedInterval = (width / 50) - 1
+		# actualIntervalLength = intervalArray.length
+		# while actualIntervalLength > allowedInterval
+		# 	actualIntervalLength = Math.ceil actualIntervalLength/2
+
+		allowedIndices = getAllowedIntervalLabel width,intervalArray.length
+
+		for interval,i in intervalArray
+			
+			# if (i+1)%(Math.ceil(intervalArray.length/actualIntervalLength)) 
+				# console.log (i+1)%(Math.ceil(intervalArray.length/actualIntervalLength))
+				# continue
+			if i+1 in allowedIndices
+				left = (interval.percentage * width / 100)-20
+				$parent.find('.timeline-interval-region').append "<div class='time-interval' style='left : #{interval.percentage}%'><div>#{interval.label}</div></div>"
+
+	getAllowedIntervalLabel = (width,actualNumberOfLabels)->
+		allowedNumberOfLabels = (width / 50) 
+		tempNumberOfLabels = actualNumberOfLabels
+		# while tempNumberOfLabels > allowedNumberOfLabels
+		# 	tempNumberOfLabels = Math.ceil tempNumberOfLabels/2
+		divisor = Math.ceil actualNumberOfLabels/allowedNumberOfLabels
+
+		allowedIndex = []
+		for i in [1..actualNumberOfLabels]
+			if i%divisor is 0 and i isnt 0
+				allowedIndex.push i
+		allowedIndex
+
+	getPixelPerSecond = (timeArray,width)->
+		shortestSlot = 100000
+		for time,i in timeArray
+			if i is 0 then continue
+			if shortestSlot > time - timeArray[i-1]
+				shortestSlot = time - timeArray[i-1]
+		pps = 40/shortestSlot
+
+		ppsTotal = width/(timeArray[timeArray.length-1]-timeArray[0])
+
+		pixelPerSecond = if pps > ppsTotal then pps else ppsTotal
+
+		pixelPerSecond
+
+	addSwipeEventHandlers = ($parent, options)->
+
+		startX = startY = distX = distY = 0
+
+		$timeslotDescription = $parent.find('.time-description .slot')
+
+		$timeslotDescription.on 'swiperight',(e)->
+
+			# newMoment = moment.unix(options.timeArray[0])
+			if not $(e.target).hasClass 'slot'
+				return
+			slotNo = parseInt $(e.target).attr 'data-slot'
+			slotStart = options.timeArray[slotNo]
+			slotEnd = options.timeArray[slotNo+1]
+			duration = moment.unix(slotEnd).diff(moment.unix(slotStart),'minutes')
+			console.log duration
+			console.log 'split'
+			bootbox.dialog
+				title : 'Create new slot'
+				message : '
+							<div>
+							<span> Start time : '+moment.unix(slotStart).format('h:mm a')+' </span>
+							</div><div>
+							<span> End time : '+moment.unix(slotEnd).format('h:mm a')+' </span>
+							</div>
+							<div><span>Duration : '+duration+' minutes</span></div>
+							<div class="split-time">
+								Enter new slot time   
+							<span>
+								<input type="number" maxlength="2" min="0" max="24" class="new-slot"/>
+							</span>  minutes
+							<div>
+								add new slot at the </br>
+								<input type="radio" name="newSlotPosition" value="start" checked>Start
+								<input type="radio" name="newSlotPosition" value="end">End
+
+							</div>
+						</div>'
+				buttons :
+					cancel :
+						label : 'Cancel'
+						className : 'btn-failure'
+					split:  
+						label : 'Split'
+						className : 'btn-primary'
+						callback : ->
+							timeMinutes = parseInt $('.split-time .new-slot').val()
+							slotMinutes = if timeMinutes >0 and timeMinutes < duration then timeMinutes else ''
+							if slotMinutes is '' then return
+							newMoment = moment.unix(slotStart)
+							# newMoment.hour hour
+							console.log $('input[name="newSlotPosition"]').val()
+							if $('input[name="newSlotPosition"]:checked').val() is 'end'
+								newMoment.add duration-slotMinutes, 'm'
+							else
+								newMoment.add slotMinutes,'m'
+
+							newMomentUnix = newMoment.unix()
+							if newMomentUnix > slotStart and newMomentUnix < slotEnd
+								options.timeArray.push newMomentUnix
+								options.timeArray.sort()
+								if options.onSplitSlot? and typeof options.onSplitSlot is 'function'
+									options.onSplitSlot.call @, options.timeArray
+								$parent.trigger 'refresh'
+
+					
 
 
 
-	class Timeline
-		constructor : ($parent, timeArray)->
-			if not ($parent instanceof jQuery)
-				throw "please give a jquery object"
+		$timeslotDescription.on 'swipeleft',(e)->
+			if not $(e.target).hasClass 'slot'
+				return
+			slotNo = parseInt $(e.target).attr 'data-slot'
 
-			if not doesClassExists $parent, 'timeline'
-				createDivWithClass $parent, 'timeline'
-			if not doesClassExists $parent, 'time-description'
-				createDivWithClass $parent, 'time-description'
+			isFirst = if slotNo is 0 then true else false
+			isLast = if slotNo is options.timeArray.length-2 then true else false
 
+			if isFirst and isLast then return
+
+			template = ''
+			if not isFirst
+				template += '<input type="radio" name="combine" value="top" checked>Top  </br>'
+			if not isLast
+				template += '<input type="radio" name="combine" value="bottom" checked>Bottom '
+
+			bootbox.dialog
+				title : 'Combine Slots'
+				message : template
+				buttons :
+					cancel : 
+						label : 'Cancel'
+						className : 'btn-failure'
+					combine:
+						label : 'Combine'
+						className : 'btn-primary'
+						callback : ->
+							combineWith = $('input[name="combine"]:checked').val()
+							if combineWith is 'top'
+								options.timeArray.splice slotNo,1
+							else if combineWith is 'bottom'
+								options.timeArray.splice slotNo+1, 1
+							else
+								return
+							if options.onCombineSlot? and typeof options.onCombineSlot is 'function'
+									options.onCombineSlot.call @, options.timeArray
+								$parent.trigger 'refresh'
+
+
+
+								
+
+
+	render = (options)->
+
+			$parent = @
+
+			if not validateTimeArray options.timeArray
+				throw 'The timeArray passed is not valid'
+
+			# sort time array in asscending order
+			options.timeArray.sort()
+
+			# create main regions
+			createChildRegion $parent
+
+			
 			$parent.find('.timeline').css 
 					'width':'100%'
 					'overflow-x' : 'hidden'
 
+			intervalArray = getHourArray options.timeArray
 
-			if timeArray.length < 2
-				throw "Please give time array greater then or equal to 2"
-
-			if not checkIfDatesBelongToSameDay timeArray
-				throw "all time must belong to same day"
-
-			# sort time array in asscending order
-			timeArray.sort()
-
-			@startTime = getStartTime timeArray
-			@endTime = getEndTime timeArray
-
-			intervalArray = getHourArray @startTime, @endTime
+			addTimeSlots $parent, options
 
 			# add hourly ime interval
 			insertTimelineInterval $parent, intervalArray
 
-			addTimeSlots $parent, timeArray
+			addSwipeEventHandlers $parent, options
+
+			# addTimeSlots $parent, options.timeArray
+
+
+	class Timeline
+		constructor : ( options )->
+			
+			render.call @, options
+
+			@.on 'refresh',=>
+				
+				render.call @, options
+
+
+		
 
 			
 
@@ -196,13 +388,18 @@
 
 
 	if TEST_ENV?
-		root.doesClassExists = doesClassExists
-		root.createDivWithClass = createDivWithClass
-		root.checkIfDatesBelongToSameDay = checkIfDatesBelongToSameDay
+		# root.hasChild = hasChild
+		root.createChildRegion = createChildRegion
+		root.validateSameDayTime = validateSameDayTime
 		root.getStartTime = getStartTime
 		root.getEndTime = getEndTime
 		root.getHourArray = getHourArray
+		root.getAllowedIntervalLabel = getAllowedIntervalLabel
+		root.getPixelPerSecond = getPixelPerSecond
 
-	root.Timeline = Timeline
+
+		root.validateTimeArray = validateTimeArray
+
+	$.fn.timeline = Timeline
 
 ).call @,jQuery
