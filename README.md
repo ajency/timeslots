@@ -14,13 +14,12 @@ per day horizontal timeline to show the different timeslots in different colors
 <ul>
 
 
-##usage
+#usage
 
 ```sh  
-arr = [1422523800,1422526800,1422528000,1422534600,
-				1422538200,1422541800,1422546400,1422552600]
+<script>
 	$('.app').timeline({
-		timeArray : arr,
+		timeArray : [1422523800,1422526800,1422528000,1422534600,1422538200,1422541800,1422546400,1422552600],
 		showStartEndTimes : true,
 		onSplitSlot : function(timeArray){
 			console.log(timeArray);
@@ -29,5 +28,8 @@ arr = [1422523800,1422526800,1422528000,1422534600,
 			console.log(timeArray);
 		}
 	})
-
+</script>
 ```
+
+###timeArray 
+(required)
