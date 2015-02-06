@@ -1,0 +1,6 @@
+node_modules
+bower_components
+server
+vendor/jquery.mobile-1.4.5
+vendor/jQuery-Touch-Events-master
+vendor/Smooth-Div-Scroll-master
