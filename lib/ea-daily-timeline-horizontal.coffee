@@ -28,7 +28,7 @@
 
 		for time,i in timeArray
 			if i is 0
-				if options.showStartEndTimes
+				if options.showSlotTimes
 					$parent.find('.timeline-slot-region').append "<div  class='slot-interval' >
 												<div class='slot-interval-time first'>
 													#{moment.unix(time).format('H:mm')}
@@ -43,7 +43,7 @@
 			$parent.find('.timeline-slot-region').append "<div data-slot='#{i-1}' class='slot' style='background-color: #{color}; width: #{percentage}px'></div>"
 			addDescription $parent,timeArray[i-1],time,color,i-1
 			
-			if options.showStartEndTimes
+			if options.showSlotTimes
 				if i < timeArray.length-1
 					$parent.find('.timeline-slot-region').append "<div  class='slot-interval' ><div class='slot-interval-time'>#{moment.unix(time).format('H:mm')}</div></div>"
 				else
@@ -394,6 +394,9 @@
 
 	class Timeline
 		constructor : ( options )->
+
+			if not options.showSlotTimes? 
+				options.showSlotTimes = true
 			
 			render.call @, options
 
