@@ -32,20 +32,20 @@ per day horizontal timeline to show the different timeslots in different colors
 ```
 
 ### timeArray 
-(required)</br>
+(required)<br/>
 array of the times in unix timestamp . minimum length should be 2
 
 ### showSlotTimes
-(optional)</br>
-default  = true</br>
+(optional)<br/>
+default  = true<br/>
 show times for slot change
 
 ### onSplitSlot
-(optional)</br>
-callback when split is done</br>
+(optional)<br/>
+callback when split is done<br/>
 is given the new timearray
 
 ### onCombineSlot
-(optional)</br>
-callback when combine is done</br>
+(optional)<br/>
+callback when combine is done<br/>
 is given the new timearray
